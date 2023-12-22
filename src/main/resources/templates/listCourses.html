@@ -1,0 +1,55 @@
+<html xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>Welcome and Choose a Course</title>
+    <style type="text/css">
+        body {
+            width: 800px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Courses List</h1>
+</header>
+<main>
+    <div style="color: red" th:text="${error}"></div>
+    <h2>Choose course:</h2>
+    <form th:method="POST" th:action="@{/courses/filter}">
+        <select name="type">
+            <option th:each="type :${types}" th:value="${type}" th:text="${type}" th:selected="${typeSelect!=null && typeSelect.equals(type)}"></option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+    <form th:method="POST" th:action="@{/courses}" id="chose">
+    <div th:each="course : ${courses}">
+        <input th:id="${course.courseId}"  type="radio" name="courseId" th:value="${course.courseId}">
+        <label th:for="${course.courseId}" th:text="${course.name}"></label>
+    </div>
+
+    <br/>
+    <input type="submit" value="submit" form="chose">
+    </form>
+
+    <table>
+        <tbody>
+        <tr th:each="course : ${courses}" style="border: 1px solid black;border-collapse: collapse">
+            <td th:text="${course.name}"></td>
+            <td sec:authorize="hasRole('ROLE_ADMIN')">
+            <a th:href="@{'/courses/edit-form/{id}' (id=${course.courseId})}">Edit</a>
+            </td>
+            <td sec:authorize="hasRole('ROLE_ADMIN')">
+                <div style="margin-top: 13px">
+                <form th:method="POST" th:action="@{'/courses/delete/{id}' (id=${course.courseId})}" th:id="${course.courseId+ 'f'}">
+                    <button class="del" type="submit" name="Delete" th:form="${course.courseId+ 'f'}">Delete</button>
+                </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/courses/add-form/'}">Add course</a>
+</main>
+</body>
+</html>
