@@ -1,0 +1,35 @@
+name: Maven Build and Docker Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '19'
+
+      - name: Build with Maven
+        run: mvn clean install
+
+      - name: Build Docker image
+        run: |
+          docker build -t macadi/postgres:latest .
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+          docker push macadi/postgres:latest
+        env:
+          DOCKER_CLI_ASK_PASS: 0
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_PASSWORD }}
