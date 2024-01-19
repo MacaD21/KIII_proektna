@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: spring-boot-container
-          image: macadi/postgres:latest
+          image: docker.io/macadi/postgres:latest
           ports:
             - containerPort: 8080
           envFrom:
